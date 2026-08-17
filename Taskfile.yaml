@@ -1,0 +1,58 @@
+version: '3'
+
+vars:
+  DEFCONFIG: orchidos_x86_64_defconfig
+  BR2_EXTERNAL: ../br2_external
+  BUILDROOT_DIR: ./buildroot
+  DOCKER_RUN: ./buildroot/utils/docker-run
+
+tasks:
+  default:
+    cmds:
+      - task --list
+    silent: true
+
+  menuconfig:
+    desc: Buildroot Menuconfig starten
+    cmds:
+      - |
+        {{.DOCKER_RUN}} bash -c "cd {{.BUILDROOT_DIR}} && \
+          make BR2_EXTERNAL={{.BR2_EXTERNAL}} {{.DEFCONFIG}} && \
+          make menuconfig"
+    silent: true
+
+  savedefconfig:
+    desc: Änderungen in Defconfig speichern
+    cmds:
+      - |
+        {{.DOCKER_RUN}} bash -c "cd {{.BUILDROOT_DIR}} && \
+          make BR2_EXTERNAL={{.BR2_EXTERNAL}} \
+            BR2_DEFCONFIG={{.BR2_EXTERNAL}}/configs/{{.DEFCONFIG}} \
+            savedefconfig"
+      - echo "✅ Defconfig gespeichert"
+    silent: true
+
+  build:
+    desc: Vollständigen Build starten
+    cmds:
+      - |
+        {{.DOCKER_RUN}} bash -c "cd {{.BUILDROOT_DIR}} && \
+          make BR2_EXTERNAL={{.BR2_EXTERNAL}} {{.DEFCONFIG}} && \
+          make"
+      - echo "✅ Build abgeschlossen"
+    silent: true
+
+  clean:
+    desc: Build-Artifakte löschen
+    cmds:
+      - |
+        {{.DOCKER_RUN}} bash -c "cd {{.BUILDROOT_DIR}} && make clean"
+      - echo "✅ Clean abgeschlossen"
+    silent: true
+
+  shell:
+    desc: Shell im Docker-Container öffnen
+    cmds:
+      - |
+        {{.DOCKER_RUN}} bash
+    silent: true

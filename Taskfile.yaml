@@ -56,3 +56,30 @@ tasks:
       - |
         {{.DOCKER_RUN}} bash
     silent: true
+
+  linux-menuconfig:
+    desc: Linux Kernel Menuconfig öffnen
+    cmds:
+      - |
+        {{.DOCKER_RUN}} bash -c "cd {{.BUILDROOT_DIR}} && \
+          make BR2_EXTERNAL={{.BR2_EXTERNAL}} {{.DEFCONFIG}} && \
+          make linux-menuconfig"
+    silent: true
+
+  linux-update-defconfig:
+    desc: Linux-Kernel-Config dauerhaft speichern (in board/orchidos/linux.config)
+    cmds:
+      - |
+        {{.DOCKER_RUN}} bash -c "cd {{.BUILDROOT_DIR}} && \
+          make BR2_EXTERNAL={{.BR2_EXTERNAL}} linux-update-defconfig"
+      - echo "✅ Linux Kernel Config gespeichert in board/orchidos/linux.config"
+    silent: true
+
+  linux-clean:
+    desc: Linux Kernel Build-Artifakte löschen (zwingt Neukompilierung)
+    cmds:
+      - |
+        {{.DOCKER_RUN}} bash -c "cd {{.BUILDROOT_DIR}} && \
+          make BR2_EXTERNAL={{.BR2_EXTERNAL}} linux-clean"
+      - echo "✅ Linux Kernel Clean abgeschlossen"
+    silent: true
